@@ -1,11 +1,12 @@
 package com.demo.services.drivers;
 
-import com.demo.api.dto.CertificateDTO;
+import com.demo.models.enums.CertificateName;
+import com.demo.services.dto.certificate.SaveCertificate;
 import com.demo.exceptions.NotFoundException;
 import com.demo.models.Certificate;
 import com.demo.models.Course;
 import com.demo.repositories.ICertificateRepository;
-import com.demo.services.IAccountService;
+import com.demo.services.IUserService;
 import com.demo.services.ICertificateService;
 import com.demo.services.ICourseService;
 import lombok.AccessLevel;
@@ -22,7 +23,7 @@ import java.util.List;
 public class CertificateService implements ICertificateService {
     ICertificateRepository certRepo;
     ICourseService courseSvc;
-    IAccountService accountSvc;
+    IUserService userSvc;
 
     @Override
     public List<Certificate> getAll() { return certRepo.findAll(); }
@@ -36,34 +37,34 @@ public class CertificateService implements ICertificateService {
     }
 
     @Override
-    public Certificate save(CertificateDTO data) throws Exception {
+    public Certificate save(Long id, SaveCertificate data) throws Exception {
         // Get certificate
         var cert = new Certificate();
-        if (data.getId() != null) {
-            cert = findById(data.getId());
+        if (id != null) {
+            cert = findById(id);
             if (cert == null) {
-                throw new NotFoundException("Certificate ID", data.getId().toString());
+                throw new NotFoundException("Certificate ID", id.toString());
             }
         }
-        // Get account
-        var account = accountSvc.findById(data.getAccountId());
-        if (account == null) {
-            throw new NotFoundException("Account ID", data.getId().toString());
+        // Get user
+        var user = userSvc.findById(data.getUserId());
+        if (user == null) {
+            throw new NotFoundException("User ID", data.getUserId().toString());
         }
         // Get courses
         var courses = new ArrayList<Course>();
-        for (var id : data.getCourseIds()) {
-            var crs = courseSvc.findById(id);
+        for (var cId : data.getCourseIds()) {
+            var crs = courseSvc.findById(cId);
             if (crs == null) {
-                throw new NotFoundException("Course ID", id.toString());
+                throw new NotFoundException("Course ID", cId.toString());
             }
             courses.add(crs);
         }
         // Set data
-        cert.setGrade(data.getGrade());
+        cert.setCertificateName(CertificateName.fromValue(data.getCertificateName()));
         cert.setIssueDate(data.getIssueDate());
-        cert.setAccount(account);
-        if (data.getId() != null) {
+        cert.setUser(user);
+        if (id != null) {
             // delete all certificate_courses records
             cert.getCourses().clear();
             certRepo.save(cert);

@@ -2,6 +2,9 @@ spring:
   application:
     name: demo
 
+  thymeleaf:
+    cache: false
+
   datasource:
     url: jdbc:mysql://localhost:3306/spring_elearning?createDatabaseIfNotExist=true
     username: root
@@ -14,3 +17,12 @@ spring:
     properties:
         hibernate:
           format_sql: true
+
+jwt:
+  secret: aHR0cHM6Ly93d3cuYmFodHRwczovL3d3dy5iYXNlNjRlbmNvZGUub3JnL3NlNjRodHRwczovL3d3dy5iYXNlNjRlbmNvZGUub3JnL2VuY29kZS5vcmcv
+
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE

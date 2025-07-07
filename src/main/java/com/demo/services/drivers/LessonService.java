@@ -1,6 +1,6 @@
 package com.demo.services.drivers;
 
-import com.demo.api.dto.LessonDTO;
+import com.demo.services.dto.lesson.SaveLesson;
 import com.demo.exceptions.NotFoundException;
 import com.demo.models.Lesson;
 import com.demo.repositories.ICourseRepository;
@@ -17,8 +17,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor
 public class LessonService implements ILessonService {
-    ICourseRepository courseRepo;
-    ILessonRepository lessonRepo;
+    final ICourseRepository courseRepo;
+    final ILessonRepository lessonRepo;
 
     @Override
     public List<Lesson> getAll() {
@@ -41,13 +41,13 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public Lesson save(LessonDTO data) throws Exception {
+    public Lesson save(Long id, SaveLesson data) throws Exception {
         // Get lesson
         Lesson lesson = new Lesson();
-        if (data.getId() != null) {
-            lesson = findById(data.getId());
+        if (id != null) {
+            lesson = findById(id);
             if (lesson == null) {
-                throw new NotFoundException("Lesson ID", data.getId().toString());
+                throw new NotFoundException("Lesson ID", id.toString());
             }
         }
         // Get course
@@ -57,7 +57,7 @@ public class LessonService implements ILessonService {
         }
         // Set data
         lesson.setHours(data.getHours());
-        lesson.setName(data.getName());
+        lesson.setTitle(data.getTitle());
         lesson.setCourse(course.get());
         // Save
         return lessonRepo.save(lesson);

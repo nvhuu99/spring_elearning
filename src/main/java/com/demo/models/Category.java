@@ -24,7 +24,7 @@ public class Category {
     @Column(nullable = false, length = 100)
     String name;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     List<Course> courses;
 }

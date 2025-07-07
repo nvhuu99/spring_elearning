@@ -20,9 +20,9 @@ public class Lesson {
     Long id;
 
     @Column(nullable = false, length = 200)
-    String name;
+    String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "INT UNSIGNED")
     Integer hours;
 
     @ManyToOne

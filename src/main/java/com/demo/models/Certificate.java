@@ -1,11 +1,15 @@
 package com.demo.models;
 
+import com.demo.models.dataconvert.CertificateNameConverter;
+import com.demo.models.enums.CertificateName;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,21 +20,23 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Certificate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
-    @Column(nullable = false)
-    private String grade;
+    @Convert(converter = CertificateNameConverter.class)
+    @Column(name = "certificate_name", columnDefinition = "ENUM('Associate', 'Professional', 'Master')")
+    CertificateName certificateName;
 
     @Column(name = "issue_date", nullable = false)
-    private LocalDate issueDate;
+    LocalDate issueDate;
 
     @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
-    private Account account;
+    User user;
 
     @ManyToMany
     @JoinTable(
@@ -40,5 +46,5 @@ public class Certificate {
         uniqueConstraints = @UniqueConstraint(columnNames = {"certificate_id", "course_id"})
     )
     @JsonManagedReference
-    private List<Course> courses = new ArrayList<>();
+    List<Course> courses = new ArrayList<>();
 }
